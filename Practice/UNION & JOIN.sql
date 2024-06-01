@@ -19,6 +19,13 @@ INSERT INTO branch VALUES(4, "Buffalo", NULL, NULL);
 
 SELECT employee.emp_id, employee.first_name, branch.branch_name
 FROM employee
-JOIN branch    -- LEFT JOIN, RIGHT JOIN
+RIGHT JOIN branch    -- LEFT JOIN, RIGHT JOIN
 ON employee.emp_id = branch.mgr_id;
+
+SELECT employee.emp_id, employee.first_name, employee.last_name, SUM(works_with.total_sales) AS total_sales
+FROM employee
+INNER JOIN works_with
+  ON employee.emp_id = works_with.emp_id
+WHERE works_with.total_sales > 30000
+GROUP BY employee.emp_id, employee.first_name, employee.last_name;
 
