@@ -4,7 +4,7 @@ const postsController = require('../controllers/post.controllers')
 
 const router = express.Router();
 
-router.get('/',postsController.index)
+router.post('/',postsController.save)
 
 
 
