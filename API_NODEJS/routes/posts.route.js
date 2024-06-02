@@ -6,6 +6,11 @@ const router = express.Router();
 
 router.post('/',postsController.save)
 
+router.get('/:id',postsController.showSingle)
+router.get('/',postsController.showAllPost)
+
+router.patch('/:id',postsController.updatePost)
+
 
 
 
