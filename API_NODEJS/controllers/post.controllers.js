@@ -1,4 +1,5 @@
 const models = require('../models')
+const { postValidate } = require('../validate/post.validate')
 function save(req, res) {
     const post = {
         title: req.body.title,
@@ -7,6 +8,16 @@ function save(req, res) {
         categoryId: parseInt(req.body.category_Id),
         userId: 1
     }
+    // validation
+    const validateResponse = postValidate(post)
+
+    if (validateResponse !== true) {
+        return res.status(400).json({
+            message: "Validdation Faild",
+            error: validateResponse
+        })
+    }
+    // validation end
     models.Post.create(post).then(result => {
         res.status(201).json({
             message: "Post Created Successfully",
@@ -62,11 +73,16 @@ async function updatePost(req, res) {
     }
     const userId = 1;
 
-    if (!title || !content || !image_url || !category_Id) {
+    // validation
+    const validateResponse = postValidate(updateData)
+
+    if (validateResponse !== true) {
         return res.status(400).json({
-            message: "Invalid input: title, content, image_url, and category_Id are required"
-        });
+            message: "Validdation Faild",
+            error: validateResponse
+        })
     }
+    // validation end
 
     try {
         // Check if the post exists
