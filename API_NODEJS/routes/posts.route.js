@@ -1,8 +1,9 @@
 const express = require('express')
+const router = express.Router();
+
 
 const postsController = require('../controllers/post.controllers')
 
-const router = express.Router();
 
 router.post('/',postsController.save)
 
