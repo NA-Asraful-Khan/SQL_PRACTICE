@@ -1,0 +1,4 @@
+sequelize model:generate --name User --attributes name:string,email:string,password:string /**** For Creat Model and Migration Table ***/
+
+
+sequelize db:migrate  /**** For Creat Data Base Table ***/
