@@ -10,6 +10,7 @@ router.get('/:id',postsController.showSingle)
 router.get('/',postsController.showAllPost)
 
 router.patch('/:id',postsController.updatePost)
+router.delete('/:id',postsController.destroy)
 
 
 
