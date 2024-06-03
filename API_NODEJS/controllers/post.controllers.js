@@ -4,7 +4,7 @@ function save(req, res) {
     const post = {
         title: req.body.title,
         content: req.body.content,
-        imageUrl: req.body.image_url,
+        imageUrl: `http://localhost:3000/uploads/${req.file.filename}`,
         categoryId: parseInt(req.body.category_Id),
         userId: 1
     }
@@ -64,14 +64,18 @@ function showAllPost(req, res) {
 
 async function updatePost(req, res) {
     const paramsId = req.params.id;
-    const { title, content, image_url, category_Id } = req.body;
-    const updateData = {
-        title: title,
-        content: content,
-        imageUrl: image_url,
-        categoryId: category_Id
-    }
     const userId = 1;
+    
+    // Building update data object conditionally
+    const updateData = {
+        title: req.body.title,
+        content: req.body.content,
+        categoryId: parseInt(req.body.category_Id)
+    };
+
+    if (req.file) {
+        updateData.imageUrl = `http://localhost:3000/uploads/${req.file.filename}`;
+    }
 
     // validation
     const validateResponse = postValidate(updateData)
