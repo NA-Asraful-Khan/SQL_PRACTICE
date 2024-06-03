@@ -6,7 +6,7 @@ function save(req, res) {
         content: req.body.content,
         imageUrl: `http://localhost:3000/uploads/${req.file.filename}`,
         categoryId: parseInt(req.body.category_Id),
-        userId: 1
+        userId: req.userData.userId
     }
     // validation
     const validateResponse = postValidate(post)
@@ -18,17 +18,27 @@ function save(req, res) {
         })
     }
     // validation end
-    models.Post.create(post).then(result => {
-        res.status(201).json({
-            message: "Post Created Successfully",
-            post: result
-        })
-    }).catch(err => {
-        res.status(500).json({
-            message: "Something Went Wrong",
-            error: err
-        })
-    });
+
+    models.Category.findByPk(req.body.category_Id).then(result=>{
+        if(result !== null){
+            models.Post.create(post).then(result => {
+                res.status(201).json({
+                    message: "Post Created Successfully",
+                    post: result
+                })
+            }).catch(err => {
+                res.status(500).json({
+                    message: "Something Went Wrong",
+                    error: err
+                })
+            });
+        }else{
+            res.status(400).json({
+                message: "Invalid Category Id"
+            })
+        }
+    })
+    
 }
 
 function showSingle(req, res) {
@@ -64,8 +74,8 @@ function showAllPost(req, res) {
 
 async function updatePost(req, res) {
     const paramsId = req.params.id;
-    const userId = 1;
-    
+    const userId = req.userData.userId;
+
     // Building update data object conditionally
     const updateData = {
         title: req.body.title,
@@ -78,18 +88,17 @@ async function updatePost(req, res) {
     }
 
     // validation
-    const validateResponse = postValidate(updateData)
+    const validateResponse = postValidate(updateData);
 
     if (validateResponse !== true) {
         return res.status(400).json({
-            message: "Validdation Faild",
+            message: "Validation Failed",
             error: validateResponse
-        })
+        });
     }
-    // validation end
 
     try {
-        // Check if the post exists
+        // Check if the post exists and belongs to the user
         const post = await models.Post.findOne({ where: { id: paramsId, userId: userId } });
 
         if (!post) {
@@ -98,26 +107,30 @@ async function updatePost(req, res) {
             });
         }
 
-        // Update the post
-        await models.Post.update(updateData, { where: { id: paramsId, userId: userId } });
-        if (updateData == {}) {
-            res.status(404).json({
-                message: "No Data Inserted"
-            })
-        } else if (updateData) {
-            res.status(200).json({
-                message: "Post Updated Successfully",
-                post: updateData
+        // Check if the category exists
+        const category = await models.Category.findByPk(req.body.category_Id);
+        if (!category) {
+            return res.status(400).json({
+                message: "Invalid Category Id"
             });
         }
 
+        // Update the post
+        await models.Post.update(updateData, { where: { id: paramsId, userId: userId } });
+
+        return res.status(200).json({
+            message: "Post Updated Successfully",
+            post: updateData
+        });
+
     } catch (err) {
-        res.status(500).json({
+        return res.status(500).json({
             message: "Something Went Wrong",
             error: err.message
         });
     }
 }
+
 
 function destroy(req, res) {
     const id = req.params.id;

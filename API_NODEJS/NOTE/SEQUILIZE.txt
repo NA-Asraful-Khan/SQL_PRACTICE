@@ -2,3 +2,5 @@ sequelize model:generate --name User --attributes name:string,email:string,passw
 
 
 sequelize db:migrate  /**** For Creat Data Base Table ***/
+
+sequelize seed:generate --name category-seeder  /**** For seeders Table ***/
