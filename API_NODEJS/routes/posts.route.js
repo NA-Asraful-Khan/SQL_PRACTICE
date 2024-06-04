@@ -7,8 +7,8 @@ const checkAuthMiddleware = require('../middleware/check-auth')
 
 router.post('/',checkAuthMiddleware.checkAuth,imageUploader.upload.single('image'),postsController.save)
 
-router.get('/:id',postsController.showSingle)
-router.get('/',postsController.showAllPost)
+router.get('/:id',checkAuthMiddleware.checkAuth,postsController.showSingle)
+router.get('/',checkAuthMiddleware.checkAuth,postsController.showAllPost)
 
 router.patch('/:id',checkAuthMiddleware.checkAuth,imageUploader.upload.single('image'),postsController.updatePost)
 router.delete('/:id',checkAuthMiddleware.checkAuth,postsController.destroy)

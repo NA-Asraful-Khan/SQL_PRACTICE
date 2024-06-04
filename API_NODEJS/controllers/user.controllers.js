@@ -51,6 +51,22 @@ async function signUp(req, res) {
     }
 }
 
+async function showAllUser(req, res) {
+    const userId = req.userData.userId;
+    const user = await models.User.findByPk(userId,{
+        include:[models.Post]
+    })
+    models.User.findAll().then(result => {
+        res.status(200).json({user})
+    }).catch(err => {
+        res.status(500).json({
+            message: "Something Went Wrong",
+            error: err
+        })
+    });
+}
+
+
 async function login(req, res) {
     // Validate the request body
     const validateResponse = logInValidate(req.body);
@@ -101,5 +117,6 @@ async function login(req, res) {
 
 module.exports = {
     signUp,
-    login
+    login,
+    showAllUser
 };

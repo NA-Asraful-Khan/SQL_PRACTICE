@@ -19,8 +19,8 @@ function save(req, res) {
     }
     // validation end
 
-    models.Category.findByPk(req.body.category_Id).then(result=>{
-        if(result !== null){
+    models.Category.findByPk(req.body.category_Id).then(result => {
+        if (result !== null) {
             models.Post.create(post).then(result => {
                 res.status(201).json({
                     message: "Post Created Successfully",
@@ -32,19 +32,25 @@ function save(req, res) {
                     error: err
                 })
             });
-        }else{
+        } else {
             res.status(400).json({
                 message: "Invalid Category Id"
             })
         }
     })
-    
+
 }
 
-function showSingle(req, res) {
+async function showSingle(req, res) {
     const id = req.params.id;
-
-    models.Post.findByPk(id).then(result => {
+    await models.Post.findByPk(id, {
+        include: [
+            {
+                model:models.User,
+                as: 'User',
+                attributes: ['id', 'name', 'email'],
+            }]
+    }).then(result => {
         if (result) {
             res.status(200).json(result)
         } else {
@@ -58,12 +64,41 @@ function showSingle(req, res) {
             message: "Something Went Wrong",
             error: err
         })
-    });
+    });;
+
+    // models.Post.findByPk(id).then(result => {
+    //     if (result) {
+    //         res.status(200).json(result)
+    //     } else {
+    //         res.status(404).json({
+    //             message: "Post Not Found"
+    //         })
+    //     }
+
+    // }).catch(err => {
+    //     res.status(500).json({
+    //         message: "Something Went Wrong",
+    //         error: err
+    //     })
+    // });
 }
 
-function showAllPost(req, res) {
+async function showAllPost(req, res) {
+    const userId = req.userData.userId;
+    const post = await models.Post.findAll(
+        {
+        where: { userId: userId },
+        include: [{
+            model:models.User,
+            as: 'User',
+            attributes: ['id', 'name', 'email']}],
+        attributes: {
+           // exclude: ['UserId']  Exclude the userId attribute from the post
+        }
+    });
+
     models.Post.findAll().then(result => {
-        res.status(200).json(result)
+        res.status(200).json(post)
     }).catch(err => {
         res.status(500).json({
             message: "Something Went Wrong",
