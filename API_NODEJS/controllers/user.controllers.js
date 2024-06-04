@@ -115,8 +115,30 @@ async function login(req, res) {
     }
 }
 
+function destroy(req, res) {
+    const userId = req.userData.userId;
+
+    models.User.destroy({ where: {id: userId } }).then(result => {
+        if (result) {
+            res.status(200).json({
+                message: "User Deleted Successfully"
+            })
+        } else {
+            res.status(404).json({
+                message: "User Not Found"
+            })
+        }
+    }).catch(err => {
+        res.status(500).json({
+            message: "Something Went Wrong",
+            error: err
+        })
+    });
+}
+
 module.exports = {
     signUp,
     login,
-    showAllUser
+    showAllUser,
+    destroy
 };
